@@ -12,6 +12,9 @@ yarn dev
 pnpm dev
 # or
 bun dev
+
+# and
+node initdb.mjs
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
