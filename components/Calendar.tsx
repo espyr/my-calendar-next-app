@@ -3,10 +3,12 @@ import React, { useEffect, useState } from "react";
 import Day from "./Day";
 import Header from "./Header";
 import { months, weekdays } from "./staticData";
-
-import {v4 as uuidv4} from 'uuid';
+import Modal from "react-modal";
+import { v4 as uuidv4 } from 'uuid';
 import AppBar from "./AppBar";
 import { CalendarDay, CalendarEvent } from "./types";
+import AddEvent from "./AddEvent";
+import { getEvents } from "@/apiCalls/eventsApiCalls";
 
 const Calendar: React.FC = () => {
   const [monthStep, setMonthStep] = useState<number>(0);
@@ -23,14 +25,16 @@ const Calendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState<string>("");
   const [calendarContent, setCalendarContent] = useState<CalendarDay[]>([]);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const fetchEventsAndUpdateCalendar = async () => {
+    const calendarEvents= await getEvents()
+    setEvents(calendarEvents);
+    loadCalendar(calendarEvents);
+  };
+  useEffect(() => {
+    fetchEventsAndUpdateCalendar()
+  }, []);
 
   useEffect(() => {
-    fetch('/api/events')
-        .then(response => response.json())
-        .then(data => setEvents(data));
-}, []);
-  useEffect(() => {
-
     if (monthStep !== 0) {
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
@@ -40,10 +44,9 @@ const Calendar: React.FC = () => {
       setShownYear(currentYear + yearOffset);
     }
     setCurrentDate(` ${months[shownMonth]} ${shownYear}`);
-    loadCalendar();
   }, [monthStep, shownMonth, shownYear, events]);
 
-  const loadCalendar = () => {
+  const loadCalendar = (data:CalendarEvent[])=>{
     setCalendarContent([]);
     const daysInMonth = new Date(shownYear, shownMonth + 1, 0).getDate();
     const firstDayOfMonth = new Date(
@@ -66,9 +69,8 @@ const Calendar: React.FC = () => {
         className: i <= paddingDays ? "paddingDay" : "day",
         onClick: () => i > paddingDays && openModal(date),
         text: i - paddingDays,
-        events: events.filter((event) => event.date === date),
+        events: data.filter((event:CalendarEvent) => event.date === date),
       };
-console.log(date)
       calendarDays.push(daySquare);
     }
     setCalendarContent(calendarDays);
@@ -82,7 +84,6 @@ console.log(date)
 
   const openModal = (date: string) => {
     setIsAddModalOpen(true);
-    console.log(date);
     setDayClicked(date);
   };
 
@@ -92,10 +93,9 @@ console.log(date)
 
       <div className="flex justify-end self-end mr-5 mt-4">
         <p
-          className=" text-brown-peach  w-52 self-end font-cursive	text-center border-4
+          className="text-brown-peach w-52 self-end font-cursive text-center border-4
          border-coral outset-border p-2 bg-white font-bold text-lg mr-6"
         >
-          {" "}
           {today}
         </p>
       </div>
@@ -113,28 +113,42 @@ console.log(date)
             ))}
           </div>
         )}
-        {/* {isAddModalOpen && dayClicked && (
-          <Modal onHideModal={() => setIsAddModalOpen(false)}>
+        {isAddModalOpen && dayClicked && (
+          <Modal
+            isOpen={isAddModalOpen}
+            onRequestClose={() => setIsAddModalOpen(false)}
+            className="relative bg-gradient-to-r from-purple-300 via-pink-300 to-red-200  w-11/12 max-w-lg p-8 rounded-lg shadow-2xl outline-none"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-50 border-0 flex items-center justify-center"
+          >
             <AddEvent
               setEvents={setEvents}
               onClose={() => setIsAddModalOpen(false)}
               data={dayClicked}
               mode={"add"}
+              refetchEvents={fetchEventsAndUpdateCalendar}
+
             />
           </Modal>
         )}
         {isEditModalOpen && eventClicked && (
-          <Modal onHideModal={() => setIsAddModalOpen(false)}>
+          <Modal
+            isOpen={isEditModalOpen}
+            onRequestClose={() => setIsEditModalOpen(false)}
+            className="bg-beige w-6/12 p-4 rounded-lg"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+
+          >
             <AddEvent
               setEvents={setEvents}
               onClose={() => setIsEditModalOpen(false)}
               data={eventClicked}
               mode={"edit"}
+              refetchEvents={fetchEventsAndUpdateCalendar}
+
             />
           </Modal>
-        )} */}
+        )}
       </div>
-
     </div>
   );
 };
