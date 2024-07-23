@@ -50,7 +50,7 @@ const AddEvent: React.FC<AddEventProps> = (props) => {
   };
 
   return (
-    <div className=" flex flex-col gap-4 text-center border-none ">
+    <div className=" flex flex-col gap-4 text-center text-black border-none ">
       <h2 className="text-3xl font-extrabold mb-4 text-center text-white">{`${props.mode === "edit" ? "Edit" : "Add"
         } Event`}</h2>
       <form
