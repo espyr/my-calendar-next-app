@@ -89,7 +89,7 @@ const Calendar: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full ">
-      <AppBar title={"My Calendar"} />
+      <AppBar title={"calendar"} />
 
       <div className="flex justify-end self-end mr-5 mt-4">
         <p

@@ -18,3 +18,17 @@ export type Todo = {
   description?: string;
   completed: boolean;
 };
+
+export type TodoCardType= {
+  id: number;
+  title: string;
+  components: {
+    id: number;
+    description: string;
+    completed: boolean;
+  }[];
+  
+}
+
+export type TodoCTodoCardsTypeards= TodoCardType[]
+  

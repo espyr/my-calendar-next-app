@@ -1,5 +1,6 @@
 "use ";
 
+import { getLogo } from "./helperFuncs";
 import NavLink from "./NavLink";
 
 type AppBarProps = {
@@ -11,7 +12,7 @@ const AppBar: React.FC<AppBarProps> = ({ title }) => {
       <div className="grid grid-cols-3 text-center">
         <div className="flex-1"></div>
         <div className="font-bold flex flex-1 text-center align-middle justify-center self-center  text-rose text-4xl font-playwrite">
-          {title}{" "}
+          {getLogo(title)}{" "}
         </div>
 
         <ul className="font-semibold flex flex-row justify-end ">

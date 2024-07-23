@@ -23,8 +23,17 @@ async function setupDatabase() {
     await db.exec(`
       CREATE TABLE IF NOT EXISTS todos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        description TEXT NOT NULL,
-        completed BOOLEAN NOT NULL DEFAULT 0
+        title TEXT NOT NULL
+      )
+    `);
+
+    await db.exec(`
+      CREATE TABLE IF NOT EXISTS components (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        todo_id INTEGER,
+        description TEXT,
+        completed BOOLEAN NOT NULL DEFAULT 0,
+        FOREIGN KEY (todo_id) REFERENCES todos(id)
       )
     `);
 
@@ -47,21 +56,47 @@ async function setupDatabase() {
 
     await eventStmt.finalize();
 
-    // Insert dummy data for todos
+    // Insert dummy data for todos and components
     const dummyTodos = [
-      { description: 'make coffee', completed: false },
-      { description: 'Create app', completed: false },
+      {
+        title: "Component Librarys",
+        components: [
+          {
+            description: "material ui",
+            completed: false,
+          },
+        ],
+      },
+      {
+        title: "Javascript Librarys",
+        components: [
+          {
+            description: "react",
+            completed: false,
+          },
+        ],
+      }
     ];
 
     const todoStmt = await db.prepare(`
-      INSERT INTO todos (description, completed) VALUES (?, ?)
+      INSERT INTO todos (title) VALUES (?)
+    `);
+
+    const componentStmt = await db.prepare(`
+      INSERT INTO components (todo_id, description, completed) VALUES (?, ?, ?)
     `);
 
     for (const todo of dummyTodos) {
-      await todoStmt.run(todo.description, todo.completed);
+      const result = await todoStmt.run(todo.title);
+      const todoId = result.lastID;
+
+      for (const component of todo.components) {
+        await componentStmt.run(todoId, component.description, component.completed);
+      }
     }
 
     await todoStmt.finalize();
+    await componentStmt.finalize();
 
     console.log('Dummy data inserted successfully.');
   } catch (error) {
