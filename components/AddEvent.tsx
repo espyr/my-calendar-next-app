@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { CalendarEvent } from "./types";
 import { addEvent, deleteEvent, updateEvent } from "@/apiCalls/eventsApiCalls";
 
@@ -8,7 +8,7 @@ type AddEventProps = {
   onClose: () => void;
   mode: "add" | "edit";
   data: CalendarEvent | string;
-  refetchEvents: () => Promise<void>
+  refetchEvents: () => Promise<void>;
 };
 
 const AddEvent: React.FC<AddEventProps> = (props) => {
@@ -16,22 +16,21 @@ const AddEvent: React.FC<AddEventProps> = (props) => {
     props.mode === "edit" && typeof props.data !== "string"
       ? props.data
       : {
-        id: uuidv4(),
-        type: "startPer",
-        description: "",
-        date: typeof props.data === "string" ? props.data : "",
-        time: "",
-      };
+          id: uuidv4(),
+          type: "startPer",
+          description: "",
+          date: typeof props.data === "string" ? props.data : "",
+          time: "",
+        };
   const [event, setEvent] = useState<CalendarEvent>(initialEventState);
   const handleDelete = () => {
     props.mode === "edit" &&
       typeof props.data !== "string" &&
-      deleteEvent(event.id)
-      props.refetchEvents();
+      deleteEvent(event.id);
+    props.refetchEvents();
 
     props.onClose();
   };
-
 
   const handleSubmit = async () => {
     if (props.mode === "add") {
@@ -41,7 +40,7 @@ const AddEvent: React.FC<AddEventProps> = (props) => {
     }
     props.refetchEvents();
     props.onClose();
-  }
+  };
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     attribute: string
@@ -51,8 +50,9 @@ const AddEvent: React.FC<AddEventProps> = (props) => {
 
   return (
     <div className=" flex flex-col gap-4 text-center text-black border-none ">
-      <h2 className="text-3xl font-extrabold mb-4 text-center text-white">{`${props.mode === "edit" ? "Edit" : "Add"
-        } Event`}</h2>
+      <h2 className="text-3xl font-extrabold mb-4 text-center text-white">{`${
+        props.mode === "edit" ? "Edit" : "Add"
+      } Event`}</h2>
       <form
         id="eventForm"
         className="flex gap-5 flex-col border-none focus:border-none"
@@ -104,13 +104,15 @@ const AddEvent: React.FC<AddEventProps> = (props) => {
         >
           Cancel
         </button>
-        {props.mode === 'edit' && <button
-          className="bg-fuchsia-400 p-3 rounded-md text-white text-lg"
-          onClick={handleDelete}
-          id="deleteButton"
-        >
-          Delete
-        </button>}
+        {props.mode === "edit" && (
+          <button
+            className="bg-fuchsia-400 p-3 rounded-md text-white text-lg"
+            onClick={handleDelete}
+            id="deleteButton"
+          >
+            Delete
+          </button>
+        )}
         <button
           className="bg-emerald-400 p-3 rounded-md text-white text-lg"
           onClick={handleSubmit}

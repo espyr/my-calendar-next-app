@@ -1,4 +1,5 @@
 import AppBar from "@/components/AppBar";
+import DndExample from "@/components/DndExample";
 import MyTodos from "@/components/MyTodos";
 
 
@@ -10,6 +11,7 @@ export default function MyTodoLIst() {
 
 
             <MyTodos />
+            <DndExample />
 
         </div>
     )
