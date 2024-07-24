@@ -1,10 +1,14 @@
-import { FunctionComponent } from "react";
+import Image from "next/image";
+import { Dispatch, FunctionComponent, SetStateAction } from "react";
 import { DroppableProvided } from "react-beautiful-dnd";
-
+import edit from "../public/edit.png";
+import { TodoCardType } from "./types";
 interface TodoCardProps {
-  title: string;
+  item: TodoCardType;
   provided?: DroppableProvided;
   children: React.ReactNode;
+  setIsEditModalOpen: Dispatch<SetStateAction<boolean>>;
+  setSelectedCard: Dispatch<SetStateAction<TodoCardType | undefined>>;
 }
 
 const TodoCard: FunctionComponent<TodoCardProps> = (props) => {
@@ -15,9 +19,20 @@ const TodoCard: FunctionComponent<TodoCardProps> = (props) => {
       ref={props.provided?.innerRef}
     >
       <h2 className="text-center font-playwrite font-extrabold text-2xl mb-6 text-black">
-        {props.title}
+        {props.item.title}
       </h2>
       {props.children}
+      <div className="flex w-full items-center justify-end px-2">
+        <button
+          className="bg-fuchsia-400 p-1 rounded-md mt-3 text-white text-lg"
+          onClick={() => {
+            props.setSelectedCard(props.item);
+            props.setIsEditModalOpen(true);
+          }}
+        >
+          <Image alt="edit" className="w-8 h-8" src={edit} />
+        </button>
+      </div>
     </div>
   );
 };

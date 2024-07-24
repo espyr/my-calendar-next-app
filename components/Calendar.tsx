@@ -32,19 +32,20 @@ const Calendar: React.FC = () => {
   };
   useEffect(() => {
     fetchEventsAndUpdateCalendar()
-  }, []);
+  }, [monthStep]);
 
   useEffect(() => {
-    if (monthStep !== 0) {
+   
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
       const newMonth = currentMonth + monthStep;
+      console.log(newMonth,'newMonth')
       const yearOffset = Math.floor(newMonth / 12);
       setShownMonth(newMonth % 12);
       setShownYear(currentYear + yearOffset);
-    }
+  
     setCurrentDate(` ${months[shownMonth]} ${shownYear}`);
-  }, [monthStep, shownMonth, shownYear, events]);
+  }, [monthStep, shownMonth, shownYear, events, setMonthStep]);
 
   const loadCalendar = (data:CalendarEvent[])=>{
     setCalendarContent([]);

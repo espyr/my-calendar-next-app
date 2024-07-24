@@ -6,9 +6,14 @@ import { DndContext } from "./DndContext ";
 import { cardsData } from "./cardsData";
 import TodoCard from "./TodoCard";
 import { TodoCardType } from "./types";
+import AddTodoCard from "./AddTodoCard";
+import Modal from "react-modal";
 
 const TodosDnd = () => {
   const [data, setData] = useState<TodoCardType[] | []>([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [selectedCard, setSelectedCard] = useState<TodoCardType>();
+
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
     if (!destination) return;
@@ -41,44 +46,60 @@ const TodosDnd = () => {
   }, []);
   return (
     <DndContext onDragEnd={onDragEnd}>
-
       <div className="flex gap-4 justify-center my-20 mx-4 flex-col lg:flex-row">
         {data.map((val, index) => {
           return (
             <Droppable key={index} droppableId={`droppable${index}`}>
               {(provided) => (
-               <TodoCard title={val.title} >
-
-                <div>
-                {val.components?.map((component, index) => (
-                    <Draggable
-                      key={component.id}
-                      draggableId={component.id.toString()}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <div
-                          className={`${
-                            component.completed ? "line-through" : ""
-                          } bg-light-beige text-black mx-1 px-4 py-3 my-3`}
-                          {...provided.dragHandleProps}
-                          {...provided.draggableProps}
-                          ref={provided.innerRef}
-                        >
-                          {component.description}
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-               </TodoCard>
-                 
+                <TodoCard
+                  setIsEditModalOpen={setIsEditModalOpen}
+                  setSelectedCard={setSelectedCard}
+                  item={val}
+                  provided={provided}
+                >
+                  <div>
+                    {val.components?.map((component, index) => (
+                      <Draggable
+                        key={component.id}
+                        draggableId={component.id.toString()}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <div
+                            className={`${
+                              component.completed ? "line-through" : ""
+                            } bg-light-beige text-black mx-1 px-4 py-3 my-3`}
+                            {...provided.dragHandleProps}
+                            {...provided.draggableProps}
+                            ref={provided.innerRef}
+                          >
+                            {component.description}
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                </TodoCard>
               )}
             </Droppable>
           );
         })}
       </div>
+      {isEditModalOpen && (
+        <Modal
+          isOpen={isEditModalOpen}
+          onRequestClose={() => setIsEditModalOpen(false)}
+          className="relative bg-gradient-to-r from-purple-300 via-pink-300 to-red-200  w-11/12 max-w-lg p-8 rounded-lg shadow-2xl outline-none"
+          overlayClassName="fixed inset-0 bg-black bg-opacity-50 border-0 flex items-center justify-center"
+        >
+          <AddTodoCard
+            data={selectedCard as TodoCardType}
+            mode="edit"
+            onClose={() => setIsEditModalOpen(false)}
+          />
+        </Modal>
+      )}
     </DndContext>
   );
 };

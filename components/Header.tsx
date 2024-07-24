@@ -1,3 +1,5 @@
+'use client'
+import { useEffect } from 'react';
 import { NextButton } from '../public/NextButton'
 import { PrevButton } from "../public/PrevButton";
 type HeaderProps = {
@@ -14,6 +16,10 @@ const Header: React.FC<HeaderProps>  = ({currentDate, setMonthStep}) => {
     "Saturday",
     "Sunday",
   ];
+  useEffect (()=>{
+
+    console.log(currentDate,'currentDate')
+  })
   return (
     <div style={{display:"flex", flexDirection:"column"}}>
         <div className='flex gap:4 text-center justify-center py-24'>
