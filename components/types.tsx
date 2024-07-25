@@ -13,22 +13,17 @@ export type CalendarDay = {
   text: number;
   events: CalendarEvent[];
 };
-export type Todo = {
-  id?: string;
-  description?: string;
+export type ComponentType = {
+  id: number;
+  todo_id: number;
+  description: string;
   completed: boolean;
 };
 
-export type TodoCardType= {
+export type TodoCardType = {
   id: number;
   title: string;
-  components: {
-    id: number;
-    description: string;
-    completed: boolean;
-  }[];
-  
-}
+  components: ComponentType[];
+};
 
-export type TodoCTodoCardsTypeards= TodoCardType[]
-  
+export type TodoCTodoCardsTypeards = TodoCardType[];

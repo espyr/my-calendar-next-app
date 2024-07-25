@@ -1,27 +1,33 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { TodoCardType } from "./types";
+import { addNewCard, deleteCard, updateCard } from "@/apiCalls/todosApiCalls";
 
 type AddTodoCardProps = {
   onClose: () => void;
   mode: "add" | "edit";
   data: TodoCardType;
+  setToRefetch: Dispatch<SetStateAction<boolean>>;
 };
 
 const AddTodoCard: React.FC<AddTodoCardProps> = (props) => {
-    const [newCard, setNewCard] = useState<TodoCardType>( props.data);
-    const [cardTitle, setCardTitle] = useState<string>('');
+  const [newCard, setNewCard] = useState<TodoCardType>(props.data);
 
   const handleSubmit = async () => {
     if (props.mode === "add") {
-      // await addNewCard(newCard);
+      await addNewCard(newCard);
     } else {
-      // await updateCard(newCard);
+      await updateCard(newCard);
     }
+    props.setToRefetch((prVal) => !prVal);
+
     props.onClose();
   };
-
-  
-
+  const handleDelete = async () => {
+    console.log(props.data.id, "props.data.id");
+    await deleteCard(props.data.id);
+    props.setToRefetch((prVal) => !prVal);
+    props.onClose();
+  };
   const handleComponentChange = (
     e: ChangeEvent<HTMLInputElement>,
     index: number,
@@ -38,8 +44,13 @@ const AddTodoCard: React.FC<AddTodoCardProps> = (props) => {
       ...newCard,
       components: [
         ...newCard.components,
-        { id: Math.random(), description: "", completed: false }
-      ]
+        {
+          id: Math.random(),
+          description: "",
+          completed: false,
+          todo_id: props.data.id,
+        },
+      ],
     });
   };
 
@@ -57,8 +68,10 @@ const AddTodoCard: React.FC<AddTodoCardProps> = (props) => {
         <input
           className="h-10 p-2 outline-none"
           placeholder="Card Title"
-          value={props.mode === 'edit' ? newCard.title : cardTitle}
-          onChange={(e) => setCardTitle(e.target.value)}
+          value={newCard.title || ""}
+          onChange={(e) =>
+            setNewCard((prVal) => ({ ...prVal, title: e.target.value }))
+          }
         />
         {newCard.components.map((component, index) => (
           <div key={component.id} className="flex gap-2 items-center">
@@ -82,7 +95,7 @@ const AddTodoCard: React.FC<AddTodoCardProps> = (props) => {
           className="bg-blue-500 p-2 rounded-md text-black"
           onClick={addComponent}
         >
-          Add Task
+          + Add Task
         </button>
       </form>
       <div className="flex justify-between px-8 pt-5">
@@ -95,7 +108,7 @@ const AddTodoCard: React.FC<AddTodoCardProps> = (props) => {
         {props.mode === "edit" && (
           <button
             className="bg-fuchsia-400 p-3 rounded-md text-white text-lg"
-            // onClick={handleDelete}
+            onClick={handleDelete}
             id="deleteButton"
           >
             Delete

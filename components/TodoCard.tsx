@@ -17,6 +17,7 @@ const TodoCard: FunctionComponent<TodoCardProps> = (props) => {
       className=" bg-gradient-to-r from-purple-300 via-pink-300 to-red-200  w-11/12 max-w-lg p-8 rounded-lg shadow-2xl outline-none"
       {...props.provided?.droppableProps}
       ref={props.provided?.innerRef}
+      
     >
       <h2 className="text-center font-playwrite font-extrabold text-2xl mb-6 text-black">
         {props.item.title}

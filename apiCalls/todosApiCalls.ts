@@ -1,4 +1,4 @@
-import { Todo } from "@/components/types";
+import { TodoCardType } from "@/components/types";
 
 export const getTodos = async () => {
   const response = await fetch('/api/todos');
@@ -6,7 +6,7 @@ export const getTodos = async () => {
   return data;
 }
 
-export const addTodo = async (todo: Todo) => {
+export const addNewCard = async (todo: TodoCardType) => {
   try {
     const response = await fetch('/api/todos', {
       method: 'POST',
@@ -26,9 +26,9 @@ export const addTodo = async (todo: Todo) => {
   }
 };
 
-export const updateTodo = async (todo: Todo) => {
+export const updateCard = async (todo: TodoCardType) => {
   try {
-    const response = await fetch(`/api/todos/${todo.id}`, {
+    const response = await fetch(`/api/todos?id=${todo.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -47,9 +47,9 @@ export const updateTodo = async (todo: Todo) => {
   }
 };
 
-export const deleteTodo = async (todoId: string) => {
+export const deleteCard = async (todoId: number) => {
   try {
-    const response = await fetch(`/api/todos/${todoId}`, {
+    const response = await fetch(`/api/todos?id=${todoId}`, {
       method: 'DELETE',
     });
 

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Todo } from "@/components/types";
+import { TodoCardType } from "@/components/types";
 import {
   getTodos,
   addTodo,
@@ -9,7 +9,7 @@ import {
 } from "@/apiCalls/todosApiCalls";
 
 const MyTodos: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<TodoCardType[]>([]);
   const [newTodoDescription, setNewTodoDescription] = useState<string>("");
 
   const fetchTodos = async () => {
@@ -47,7 +47,7 @@ const MyTodos: React.FC = () => {
 
   return (
     <div className="flex flex-col text-black w-full justify-center align-middle items-center">
-      <div className="text-3xl pt-6 font-bold text-light-brown stroke-amber-900 stroke-2 ">
+      {/* <div className="text-3xl pt-6 font-bold text-light-brown stroke-amber-900 stroke-2 ">
         THINGS TO DO
       </div>
       <label htmlFor="todo">Add a new todo</label>
@@ -72,7 +72,7 @@ const MyTodos: React.FC = () => {
             <button onClick={() => handleDeleteTodo(todo.id!)}>Delete</button>
           </li>
         ))}
-      </ul>
+      </ul> */}
     </div>
   );
 };
