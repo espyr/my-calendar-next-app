@@ -1,13 +1,13 @@
 "use client";
 
+import { getTodos, updateCard } from "@/apiCalls/todosApiCalls";
 import { useEffect, useState } from "react";
-import { Draggable, DropResult, Droppable } from "react-beautiful-dnd";
+import { Draggable, Droppable } from "react-beautiful-dnd";
+import Modal from "react-modal";
+import AddTodoCard from "./AddTodoCard";
 import { DndContext } from "./DndContext ";
 import TodoCard from "./TodoCard";
-import { TodoCardType } from "./types";
-import AddTodoCard from "./AddTodoCard";
-import Modal from "react-modal";
-import { getTodos } from "@/apiCalls/todosApiCalls";
+import { DragEndType, TodoCardType } from "./types";
 
 const TodosDnd = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
@@ -15,32 +15,59 @@ const TodosDnd = () => {
   const [data, setData] = useState<TodoCardType[] | []>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [selectedCard, setSelectedCard] = useState<TodoCardType>();
-
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = async (result: DragEndType) => {
     const { source, destination } = result;
     if (!destination) return;
+    console.log(source,'result')
+    
+    let updatedData = [...data];
+    const sourceIndex = updatedData.findIndex(
+      (x) => x.id === +source.droppableId
+    );
+    console.log(updatedData,'updatedData')
+    const destinationIndex = updatedData.findIndex(
+      (x) => x.id === +destination.droppableId
+    );
+
+    // Check if indices are valid
+    if (sourceIndex === -1 || destinationIndex === -1) {
+      console.error("Invalid source or destination index");
+      return;
+    }
+
     if (source.droppableId !== destination.droppableId) {
-      const newData = [...JSON.parse(JSON.stringify(data))]; //shallow copy concept
-      const oldDroppableIndex = newData.findIndex(
-        (x) => x.id == source.droppableId.split("droppable")[1]
-      );
-      const newDroppableIndex = newData.findIndex(
-        (x) => x.id == destination.droppableId.split("droppable")[1]
-      );
-      const [item] = newData[oldDroppableIndex].components.splice(
+      const [movedItem] = updatedData[sourceIndex].components.splice(
         source.index,
         1
       );
-      newData[newDroppableIndex].components.splice(destination.index, 0, item);
-      setData([...newData]);
-    } else {
-      const newData = [...JSON.parse(JSON.stringify(data))]; //shallow copy concept
-      const droppableIndex = newData.findIndex(
-        (x) => x.id == source.droppableId.split("droppable")[1]
+      updatedData[destinationIndex].components.splice(
+        destination.index,
+        0,
+        movedItem
       );
-      const [item] = newData[droppableIndex].components.splice(source.index, 1);
-      newData[droppableIndex].components.splice(destination.index, 0, item);
-      setData([...newData]);
+    } else {
+      const [movedItem] = updatedData[sourceIndex].components.splice(
+        source.index,
+        1
+      );
+      updatedData[destinationIndex].components.splice(
+        destination.index,
+        0,
+        movedItem
+      );
+    }
+
+    try {
+      const response1 = await updateCard(updatedData[sourceIndex]);
+      const response2 = await updateCard(updatedData[destinationIndex]);
+
+      if (!response1.ok && !response2.ok) {
+        console.error("Error updating components order:", response1.statusText);
+      } else {
+        setToRefetch((prev) => !prev);
+      }
+    } catch (error) {
+      console.error("Error updating components order:", error);
     }
   };
   useEffect(() => {
@@ -64,7 +91,7 @@ const TodosDnd = () => {
         <div className="flex gap-4 justify-center my-20 mx-4 flex-col lg:flex-row">
           {data.map((val, index) => {
             return (
-              <Droppable key={index} droppableId={`droppable${index}`}>
+              <Droppable key={index} droppableId={val.id.toString()}>
                 {(provided) => (
                   <TodoCard
                     setIsEditModalOpen={setIsEditModalOpen}
@@ -109,32 +136,32 @@ const TodosDnd = () => {
             overlayClassName="fixed inset-0 bg-black bg-opacity-50 border-0 flex items-center justify-center"
           >
             <AddTodoCard
-             setToRefetch={setToRefetch}
+              setToRefetch={setToRefetch}
               data={selectedCard as TodoCardType}
               mode="edit"
               onClose={() => setIsEditModalOpen(false)}
             />
           </Modal>
         )}
-            {isAddModalOpen && (
-        <Modal
-          isOpen={isAddModalOpen}
-          onRequestClose={() => setIsAddModalOpen(false)}
-          className="relative bg-gradient-to-r from-purple-300 via-pink-300 to-red-200  w-11/12 max-w-lg p-8 rounded-lg shadow-2xl outline-none"
-          overlayClassName="fixed inset-0 bg-black bg-opacity-50 border-0 flex items-center justify-center"
-        >
-          <AddTodoCard
-          setToRefetch={setToRefetch}
-            data={{
-              id: Math.random(),
-              title: "",
-              components: [],
-            }}
-            mode="add"
-            onClose={() => setIsAddModalOpen(false)}
-          />
-        </Modal>
-      )}
+        {isAddModalOpen && (
+          <Modal
+            isOpen={isAddModalOpen}
+            onRequestClose={() => setIsAddModalOpen(false)}
+            className="relative bg-gradient-to-r from-purple-300 via-pink-300 to-red-200  w-11/12 max-w-lg p-8 rounded-lg shadow-2xl outline-none"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-50 border-0 flex items-center justify-center"
+          >
+            <AddTodoCard
+              setToRefetch={setToRefetch}
+              data={{
+                id: Math.random(),
+                title: "",
+                components: [],
+              }}
+              mode="add"
+              onClose={() => setIsAddModalOpen(false)}
+            />
+          </Modal>
+        )}
       </DndContext>
     </>
   );

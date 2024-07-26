@@ -27,3 +27,18 @@ export type TodoCardType = {
 };
 
 export type TodoCTodoCardsTypeards = TodoCardType[];
+export type DragEndType ={
+  draggableId:string
+  type:string
+  source: {
+      index:number
+      droppableId:string
+  },
+  reason:string
+  mode:string
+  destination: {
+      droppableId:string
+      index:number
+  },
+  combine?:string
+}

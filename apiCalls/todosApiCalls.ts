@@ -1,3 +1,4 @@
+// apiCalls/todosApiCalls.js
 import { TodoCardType } from "@/components/types";
 
 export const getTodos = async () => {
@@ -58,6 +59,28 @@ export const deleteCard = async (todoId: number) => {
       return result;
     } else {
       console.error('Failed to delete todo');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+// New function to update the order of components
+export const updateComponentsOrder = async (todos: TodoCardType[]) => {
+  try {
+    const response = await fetch('/api/todos/updateComponentsOrder', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(todos),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      return result;
+    } else {
+      console.error('Failed to update components order');
     }
   } catch (error) {
     console.error('Error:', error);
