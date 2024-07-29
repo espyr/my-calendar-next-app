@@ -24,11 +24,8 @@ const AddEvent: React.FC<AddEventProps> = (props) => {
         };
   const [event, setEvent] = useState<CalendarEvent>(initialEventState);
   const handleDelete = () => {
-    props.mode === "edit" &&
-      typeof props.data !== "string" &&
-      deleteEvent(event.id);
+    props.mode === "edit" && deleteEvent(event.id);
     props.refetchEvents();
-
     props.onClose();
   };
 

@@ -31,7 +31,6 @@ export const getLogo = (title: string) => {
 };
 
 export const getIcon = (event: CalendarEvent) => {
-  console.log(event, "event");
   switch (event.type) {
     case "startPer":
       return (

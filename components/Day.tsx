@@ -20,8 +20,8 @@ const Day: React.FC<DayProps> = ({ item, setEventClicked,setIsEditModalOpen }) =
       className={`${styles[className]} ${isToday && styles["today"]} flex gap-3` }
     >
       {className !== "paddingDay" && (
-        <div className="text-left ">
-          {text}
+        <div className="text-left text-black">
+          <p className="text-left text-fouksia ">{text}</p>
           {events && (
             <div>
               {events.map((event, index) => (

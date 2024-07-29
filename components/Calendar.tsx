@@ -16,6 +16,7 @@ const Calendar: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [eventClicked, setEventClicked] = useState<CalendarEvent>();
+
   const [shownMonth, setShownMonth] = useState<number>(new Date().getMonth());
   const [shownYear, setShownYear] = useState<number>(new Date().getFullYear());
   const newDay = new Date();
@@ -30,22 +31,35 @@ const Calendar: React.FC = () => {
     setEvents(calendarEvents);
     loadCalendar(calendarEvents);
   };
-  useEffect(() => {
-    fetchEventsAndUpdateCalendar()
-  }, [monthStep]);
 
   useEffect(() => {
-   
-      const currentMonth = new Date().getMonth();
-      const currentYear = new Date().getFullYear();
-      const newMonth = currentMonth + monthStep;
-      console.log(newMonth,'newMonth')
-      const yearOffset = Math.floor(newMonth / 12);
-      setShownMonth(newMonth % 12);
-      setShownYear(currentYear + yearOffset);
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    const newMonth = currentMonth + monthStep;
   
+    let adjustedMonth;
+    let adjustedYear = currentYear;
+  
+    if (newMonth < 0) {
+      adjustedMonth = (newMonth % 12 + 12) % 12;
+      adjustedYear = currentYear + Math.floor((newMonth ) / 12);
+      console.log(adjustedMonth,adjustedYear)
+
+    } else {
+      adjustedMonth = newMonth % 12 ;
+      adjustedYear = currentYear + Math.floor(newMonth / 12);
+      console.log(adjustedMonth,adjustedYear,'else')
+
+    }
+    setShownMonth(adjustedMonth);
+    setShownYear(adjustedYear);
+  }, [monthStep]);
+  
+  useEffect(() => {
     setCurrentDate(` ${months[shownMonth]} ${shownYear}`);
-  }, [monthStep, shownMonth, shownYear, events, setMonthStep]);
+    fetchEventsAndUpdateCalendar();
+  }, [shownMonth, shownYear]);
 
   const loadCalendar = (data:CalendarEvent[])=>{
     setCalendarContent([]);

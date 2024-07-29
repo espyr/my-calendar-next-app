@@ -40,7 +40,7 @@ const config: Config = {
         brown: "#b08645",
         coral: "#FF7F50",
         "brown-peach": "#d36c6c",
-
+        fouksia:'#fa054a',
         peach: "#f23c50",
         veraman: "#00ffae",
         green: "#6cc24a",
@@ -68,12 +68,15 @@ const config: Config = {
         veraman: "#00ffae",
         green: "#6cc24a",
         "brown-peach": "#d36c6c",
+        fouksia:'#fa054a',
+
       },
       textColor: {
         blue: "#0d94c4",
         white: "#ffffff",
         black: "#000000",
         rose: "#ff7882",
+        fouksia:'#fa054a',
         coral: "#FF7F50",
         "brown-peach": "#d36c6c",
         'light-beige': "	#fbecd6",

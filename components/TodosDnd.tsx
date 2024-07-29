@@ -1,6 +1,6 @@
 "use client";
 
-import { getTodos, updateCard } from "@/apiCalls/todosApiCalls";
+import { getTodos, updateCard, updateComponentStatus } from "@/apiCalls/todosApiCalls";
 import { useEffect, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import Modal from "react-modal";
@@ -8,6 +8,9 @@ import AddTodoCard from "./AddTodoCard";
 import { DndContext } from "./DndContext ";
 import TodoCard from "./TodoCard";
 import { DragEndType, TodoCardType } from "./types";
+import Image from "next/image";
+import checked from "../public/checked.png";
+import unchecked from "../public/unchecked.png";
 
 const TodosDnd = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
@@ -15,16 +18,21 @@ const TodosDnd = () => {
   const [data, setData] = useState<TodoCardType[] | []>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [selectedCard, setSelectedCard] = useState<TodoCardType>();
+  const handleCompletion = async (id: number, completed:boolean) => {
+    await updateComponentStatus(id, completed);
+    setToRefetch((prev) => !prev);
+
+  };
   const onDragEnd = async (result: DragEndType) => {
     const { source, destination } = result;
     if (!destination) return;
-    console.log(source,'result')
-    
+    console.log(source, "result");
+
     let updatedData = [...data];
     const sourceIndex = updatedData.findIndex(
       (x) => x.id === +source.droppableId
     );
-    console.log(updatedData,'updatedData')
+    console.log(updatedData, "updatedData");
     const destinationIndex = updatedData.findIndex(
       (x) => x.id === +destination.droppableId
     );
@@ -108,7 +116,7 @@ const TodosDnd = () => {
                         >
                           {(provided) => (
                             <div
-                              className={`${
+                              className={`flex justify-between items-center ${
                                 component.completed ? "line-through" : ""
                               } bg-light-beige text-black mx-1 px-4 py-3 my-3`}
                               {...provided.dragHandleProps}
@@ -116,6 +124,11 @@ const TodosDnd = () => {
                               ref={provided.innerRef}
                             >
                               {component.description}
+                              {component.completed ? (
+                                <Image src={checked} className="w-4 h-4" alt="" onClick={()=>handleCompletion(component.id, false)} />
+                              ) : (
+                                <Image src={unchecked} className="w-5 h-5" alt="" onClick={()=>handleCompletion(component.id, true)}/>
+                              )}
                             </div>
                           )}
                         </Draggable>
